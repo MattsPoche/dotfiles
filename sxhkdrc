@@ -1,0 +1,26 @@
+# simple X hotkey daemon config
+
+# browser
+super + b
+	$BROWSER
+# sound mixer
+super + shift + m
+	st -e pulsemixer
+# ytclip-play
+super + y
+	ytclip-play
+
+# Music
+super + shift + p
+	playlistload
+super + c
+	mpc toggle
+super + n
+	mpc next
+super + shift + n
+	mpc prev
+super + bracketleft
+	mpc volume -5
+super + bracketright
+	mpc volume +5
+
