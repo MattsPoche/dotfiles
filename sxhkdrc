@@ -9,7 +9,6 @@ super + shift + m
 # ytclip-play
 super + y
 	ytclip-play
-
 # Music
 super + shift + p
 	playlistload
@@ -23,4 +22,6 @@ super + bracketleft
 	mpc volume -5
 super + bracketright
 	mpc volume +5
-
+# screen shots
+super + shift + s
+	scrot -e 'mv $f ~/Pictures'
