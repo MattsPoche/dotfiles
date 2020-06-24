@@ -1,4 +1,4 @@
-xmodmap ~/.Xmodmap &
+xmodmap ~/.config/.Xmodmap &
 sxhkd &
 picom &
 dwmblocks &
