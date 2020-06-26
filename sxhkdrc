@@ -8,7 +8,7 @@ super + shift + m
 	st -e pulsemixer
 # ytclip-play
 super + y
-	ytclip-play
+	mpv $(xclip -o -selection c)
 # Music
 super + shift + p
 	playlistload
