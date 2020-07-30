@@ -10,10 +10,9 @@ hi VertSplit cterm=NONE
 set fillchars+=vert:│
 "settings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"filetype plugin on
 set tabstop=4 shiftwidth=4
-set smartindent
 set mouse=a
+set autoindent
 set number relativenumber
 set incsearch
 set nohlsearch
@@ -21,8 +20,6 @@ set ignorecase
 set smartcase
 set shortmess=I
 set hidden
-"set auto maximize on by default
-let tautomax=1
 "jumps to buffer in open window or tab
 set switchbuf=usetab
 "fuzzy file finding
