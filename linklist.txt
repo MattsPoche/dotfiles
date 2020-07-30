@@ -1,6 +1,0 @@
-.xinitrc 	~/
-.Xmodmap	~/
-init.vim	~/.config/nvim/
-tmux.conf	~/.config/tmux/
-sxhkdrc		~/.config/sxhkd/
-

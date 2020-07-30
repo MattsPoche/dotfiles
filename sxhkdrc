@@ -5,7 +5,10 @@ super + b
 	$BROWSER
 # sound mixer
 super + shift + m
-	st -e pulsemixer
+	$TERMINAL -e pulsemixer
+# music interface
+super + v
+	$TERMINAL -e ncmpcpp
 # ytclip-play
 super + y
 	mpv $(xclip -o -selection c)
@@ -16,12 +19,10 @@ super + c
 	mpc toggle
 super + n
 	mpc next
-super + shift + n
+super + shift + N
 	mpc prev
-super + bracketleft
-	mpc volume -5
-super + bracketright
-	mpc volume +5
+super + {bracketleft, bracketright}
+	mpc volume {-5, +5}
 # screen shots
 super + shift + s
 	scrot -e 'mv $f ~/Pictures'

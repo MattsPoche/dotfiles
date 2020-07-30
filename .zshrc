@@ -21,6 +21,13 @@ alias	\
 	c='clear'							\
 	ls='ls --color=auto'				\
 
+
+
+# Functions
+function Vinfo {
+	nvim -c ":set laststatus=1" -c ":set nonumber" -c ":set norelativenumber" -c ":Vinfo $1"
+}
+
 set -o vi
 
 PS1='%F{blue}[%F{green}%n%F{red}@%F{cyan}%m %B%F{yellow}%c%b%F{blue}]$ %F{15}'
