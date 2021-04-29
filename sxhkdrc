@@ -11,10 +11,18 @@ super + v
 	$TERMINAL -e ncmpcpp
 # ytclip-play
 super + y
-	mpv $(xclip -o -selection c)
+	notify-send "Playing video @ $(xclip -o -selection c)" && mpv $(xclip -o -selection c)
+# add video url to watchlater list
+super + w
+	addwatchlater
+# play watchlater as mpv playlist
+super + shift + w
+	notify-send "Playing \"watchlater\" list"  \
+		&& mpv --playlist="$HOME/.local/share/scriptdata/watchlater" \
+		&& echo > "$HOME/.local/share/scriptdata/watchlater"
 # Music
 super + shift + p
-	playlistload
+	mmenu
 super + c
 	mpc toggle
 super + n
@@ -24,5 +32,7 @@ super + shift + N
 super + {bracketleft, bracketright}
 	mpc volume {-5, +5}
 # screen shots
+super + s
+	scrot -e 'mv $f ~/Pictures/screenshots' && notify-send "Screenshot saved"
 super + shift + s
-	scrot -e 'mv $f ~/Pictures'
+	sleep 0.2 && scrot -s -e 'mv $f ~/Pictures/screenshots' && notify-send "Screenshot saved"

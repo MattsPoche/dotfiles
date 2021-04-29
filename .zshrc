@@ -11,20 +11,32 @@ export LESS=' -R '
 
 #aliases
 alias	\
-	vim=nvim							\
-	r=ranger							\
-	pms='sudo pacman -S'				\
-	pmu='sudo pacman -Syu'				\
-	yt='youtube-dl --add-metadata -i'	\
-	yta='yt -x -f bestaudio/best'		\
-	si='sxiv'							\
-	c='clear'							\
-	ls='ls --color=auto'				\
+	lf='lfcd'								\
+	pms='sudo pacman -S'				    \
+	pmu='sudo pacman -Syu'					\
+	yt='youtube-dl --add-metadata -i'	   	\
+	yta='yt -x -f bestaudio/best'		   	\
+	si='sxiv'							   	\
+	c='clear'							   	\
+	ls='ls --color=auto'				   	\
+	shots="cd $HOME/Pictures/screenshots/" 	\
+	z="zathura"                             \
 
-
-
-# Functions
-function Vinfo {
+lfcd () {
+	dirfile="$HOME/.local/share/lf/exitdir.txt"
+	command lf "$@"
+	if [ -f "$dirfile" ]
+	then
+		dir=$(cat "$dirfile")
+		rm -f "$dirfile"
+		if [ -d "$dir" ]
+		then
+			[ "$dir" != "$PWD" ] && cd "$dir"
+		fi
+	fi
+}
+# use nvim with the Vinfo pluggin instead of `info` to view info documents
+Vinfo() {
 	nvim -c ":set laststatus=1" -c ":set nonumber" -c ":set norelativenumber" -c ":Vinfo $1"
 }
 

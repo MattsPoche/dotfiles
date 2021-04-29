@@ -2,6 +2,9 @@
 "
 "appearance
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+syntax on
+set termguicolors
+colorscheme onedark
 "set statusline
 set laststatus=2
 set statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P
@@ -60,51 +63,32 @@ cnoremap <M-f> <S-Right>
 cnoremap <M-b> <S-Left>
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
-"Easier tag navigation
-nnoremap <leader>1 1gt
-nnoremap <leader>2 2gt
-nnoremap <leader>3 3gt
-nnoremap <leader>4 4gt
-nnoremap <leader>5 5gt
-nnoremap <leader>6 5gt
-nnoremap <leader>7 5gt
-nnoremap <leader>8 5gt
-nnoremap <leader>9 5gt
+"Easier tab navigation
+nnoremap <Leader>1 1gt
+nnoremap <Leader>2 2gt
+nnoremap <Leader>3 3gt
+nnoremap <Leader>4 4gt
+nnoremap <Leader>5 5gt
+nnoremap <Leader>6 5gt
+nnoremap <Leader>7 5gt
+nnoremap <Leader>8 5gt
+nnoremap <Leader>9 5gt
 "easy resize
-nnoremap <C-J> :resize +5<CR>
-nnoremap <C-K> :resize -5<CR>
-nnoremap <C-H> :vertical resize -5<CR>
-nnoremap <C-L> :vertical resize +5<CR>
-"`Maximize` current window
-function! ToggleAutoMaximize()
-	if exists('g:tautomax')
-		autocmd! maxCurrWin
-		wincmd =
-		unlet g:tautomax
-	else
-		augroup maxCurrWin
-			"autocmd! WinEnter * call Maximize()
-			autocmd! WinEnter * wincmd _
-		augroup END
-		do maxCurrWin WinEnter 
-		let g:tautomax=1
-	endif
-endfunction
-function! Maximize()
-	wincmd |
-	wincmd _
-endfunction
-nnoremap <Leader>max :call ToggleAutoMaximize()<CR>
-nnoremap <C-w>m :call Maximize()<CR>
-"insert date
-nnoremap <Leader>d "=strftime("%x %H:%M:%S")<CR>P
-"insert deadline
-nnoremap <Leader>D <end>"=strftime(" DEADLINE <%x %H:%M:%S>")<CR>p
+nnoremap <silent> <C-J> :resize +5<CR>
+nnoremap <silent> <C-K> :resize -5<CR>
+nnoremap <silent> <C-H> :vertical resize -5<CR>
+nnoremap <silent> <C-L> :vertical resize +5<CR>
+"insert date 
+nnoremap <Leader>d "=system("date " . shellescape("+<%F %a>"))<CR>p
+"insert SCHEDUlED tag
+nnoremap <Leader>sc "=system("date " . shellescape("+[SCHEDULED]: <%F %a>"))<CR>p
+"insert TODO tag
+nnoremap <Leader>td o[TODO]<ESC>
 "paste from clipboard
 nnoremap <Leader>p "+p
 vnoremap <Leader>p "+p
-"yank to clipboard
-vnoremap <Leader>y "+y
+"yank selection to clipboard
+vnoremap <Leader>yy "+y
 "move line up
 nnoremap  <Leader>k ddkP
 "move line down
@@ -124,10 +108,30 @@ nnoremap <Leader>ln :setlocal number!<CR>
 onoremap in( :<c-u>normal! f(vi(<CR>
 "inner prev parentheses
 onoremap il( :<c-u>normal! F)vi(<CR>
-"grep Todos
-nnoremap <Leader>td :grep "TODO" src/*<CR><CR>:cw<CR>
 "change `zt` so that it leaves some space above the current line
 nnoremap zt zt3<C-y>
+" functions and commands
+"`Maximize` current window
+function! ToggleAutoMaximize()
+	if exists('g:tautomax')
+		autocmd! maxCurrWin
+		wincmd =
+		unlet g:tautomax
+	else
+		augroup maxCurrWin
+			autocmd! WinEnter * call Maximize()
+		augroup END
+		do maxCurrWin WinEnter 
+		let g:tautomax=1
+	endif
+endfunction
+function! Maximize()
+	"wincmd |
+	wincmd _
+endfunction
+nnoremap <Leader>max :call ToggleAutoMaximize()<CR>
+nnoremap <C-w>m :call Maximize()<CR>
+
 "create `scratch` buffer
 function! ScratchBuffer(...)
 	let l:fname = get(a:, 1, "")
@@ -138,6 +142,41 @@ function! ScratchBuffer(...)
 endfunction
 command! -nargs=? Scratch call ScratchBuffer(<f-args>)
 
+function! Todo()
+	cexpr system('sch -t')
+endfunction
+command! Todo call Todo()
+
+function! Agenda()
+	cexpr system('sch -a')
+endfunction
+command! Agenda call Agenda()
+
+"search with ag, result in quickfix 
+function! Ag(pattern, ...)
+	let l:fname = get(a:, 1, "")
+	if l:fname == ""
+		cexpr system('ag --vimgrep --silent ' . shellescape(a:pattern))
+	else
+		cexpr system('ag --vimgrep ' . shellescape(a:pattern) . ' ' . shellescape(l:fname))
+	endif
+endfunction
+command! -nargs=* Ag call Ag(<f-args>)
+
+function! Shellchk()
+	cexpr system('shellcheck -f gcc -s sh ' . shellescape(@%))
+endfunction
+command! Shellchk call Shellchk()
+
+"delete buffer without closing current window
+function! Bclose()
+	bn
+	bdelete #
+endfunction
+command! Bclose call Bclose()
+" vim detects *.h files as cpp files instead of c header files; 
+" this fixes that
+autocmd BufRead,BufNewFile *.h set filetype=c
 "autogroups
 augroup filetype_default
 	autocmd!
@@ -153,11 +192,10 @@ augroup END
 
 augroup filetype_vim
 	autocmd!
-    autocmd FileType vim nnoremap <buffer> <Leader>cc I"<space><esc>
-    autocmd FileType vim nnoremap <buffer> <Leader>cu 0xx
-	autocmd FileType vim vnoremap <buffer> <Leader>cc :s/^\(\s*\)\(.\+\)/\1" \2/<CR>
-	"TODO: Fix this V
-	autocmd FileType vim vnoremap <buffer> <Leader>cu :s/\(^\s*\)\/\/ /\1/<CR>
+	autocmd FileType vim nnoremap <buffer> <Leader>cc :s/^/"/ge<CR>
+	autocmd FileType vim nnoremap <buffer> <Leader>cu :s/^"//ge<CR>
+	autocmd FileType vim vnoremap <buffer> <Leader>cc :s/^/"/ge<CR>
+	autocmd FileType vim vnoremap <buffer> <Leader>cu :s/^"//ge<CR>
 augroup END
 
 augroup filetype_lua
@@ -191,13 +229,14 @@ augroup filetype_c
     "keymap
 	"jump to main function assume vim is in root project directory
 	autocmd FileType c,cpp nnoremap <buffer> <Leader>gm :grep "^main" src/*<CR><CR>
-    autocmd FileType c,cpp nnoremap <buffer> <Leader>cc I//<space><esc>
-    autocmd FileType c,cpp nnoremap <buffer> <Leader>cu 0xxx
-	autocmd FileType c,cpp vnoremap <buffer> <Leader>cc :s/^\(\s*\)\(.\+\)/\1\/\/ \2/<CR>
-	autocmd FileType c,cpp vnoremap <buffer> <Leader>cu :s/\(^\s*\)\/\/ /\1/<CR>
-	autocmd FileType c,cpp vnoremap <buffer> <Leader>cb :<C-u>'<s/\(^.*$\)/\/*\1/<CR>:<C-u>'>s/\(^.*$\)/\1*\//<CR>
+	autocmd FileType c,cpp nnoremap <buffer> <Leader>cc :s/^\(.*\)/\/\* \1 \*\//ge<CR><
+    autocmd FileType c,cpp nnoremap <buffer> <Leader>cu :s/\/\* \(.*\) \*\//\1/ge<CR>
+	autocmd FileType c,cpp vnoremap <buffer> <Leader>cc :s/^\(.*\)/\/\* \1 \*\//ge<CR>
+    autocmd FileType c,cpp vnoremap <buffer> <Leader>cu :s/\/\* \(.*\) \*\//\1/ge<CR>
+	"fix horrible case statement indentation
+	autocmd FileType c,cpp set cino=l1 
     "abrev
-    autocmd FileType c,cpp iabbrev <buffer> iff if ()<left>
+    autocmd FileType c,cpp iabbrev <buffer> iff if()<left>
     ""cpp file
 augroup END
 
@@ -207,8 +246,8 @@ augroup filetype_md
     autocmd FileType markdown setlocal tabstop=2 shiftwidth=2 expandtab
 augroup END
 
-" Pathogen
-execute pathogen#infect('~/.config/nvim/bundle/{}')
+"pathogen
+execute pathogen#infect()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "vim-plug
@@ -225,5 +264,11 @@ Plug 'dhruvasagar/vim-table-mode'
 
 " Syntax highlighting 
 Plug 'sheerun/vim-polyglot'
+
+" Nord theme
+Plug 'arcticicestudio/nord-vim'
+
+" OneDark theme
+Plug 'joshdick/onedark.vim'
 
 call plug#end()

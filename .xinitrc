@@ -1,4 +1,4 @@
-xmodmap ~/.config/.Xmodmap &
+setxkbmap -option "caps:escape"
 xset r rate 180 40
 sxhkd &
 picom &
